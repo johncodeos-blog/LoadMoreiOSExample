@@ -41,7 +41,7 @@ class TableViewController: UIViewController {
             self.isLoading = true
             let start = itemsArray.count
             let end = start + 16
-            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) { // Remove the 1-second delay if you want to load the data without waiting
                 for i in start...end {
                     self.itemsArray.append("Item \(i)")
                 }
