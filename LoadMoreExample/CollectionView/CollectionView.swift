@@ -9,8 +9,7 @@
 import UIKit
 
 class CollectionViewController: UIViewController {
-
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet var collectionView: UICollectionView!
 
     var itemsArray = [UIColor]()
 
@@ -23,41 +22,38 @@ class CollectionViewController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
 
-        //Register Item Cell
+        // Register Item Cell
         let itemCellNib = UINib(nibName: "CollectionViewItemCell", bundle: nil)
         self.collectionView.register(itemCellNib, forCellWithReuseIdentifier: "collectionviewitemcellid")
 
-        //Register Loading Reuseable View
+        // Register Loading Reuseable View
         let loadingReusableNib = UINib(nibName: "LoadingReusableView", bundle: nil)
         collectionView.register(loadingReusableNib, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "loadingresuableviewid")
 
         loadData()
     }
 
-
     func loadData() {
         isLoading = false
         collectionView.collectionViewLayout.invalidateLayout()
         for _ in 0...40 {
-            //Add random color in the array
+            // Add random color in the array
             itemsArray.append(getRandomColor())
         }
         self.collectionView.reloadData()
     }
 
     func getRandomColor() -> UIColor {
-        //Generate between 0 to 1
-        let red: CGFloat = CGFloat(drand48())
-        let green: CGFloat = CGFloat(drand48())
-        let blue: CGFloat = CGFloat(drand48())
+        // Generate between 0 to 1
+        let red = CGFloat(drand48())
+        let green = CGFloat(drand48())
+        let blue = CGFloat(drand48())
 
         return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
     }
-
 }
 
 extension CollectionViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return itemsArray.count
     }
@@ -69,7 +65,7 @@ extension CollectionViewController: UICollectionViewDelegate, UICollectionViewDa
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == itemsArray.count - 10 && !self.isLoading {
+        if indexPath.row == itemsArray.count - 10, !self.isLoading {
             loadMoreData()
         }
     }
@@ -79,9 +75,7 @@ extension CollectionViewController: UICollectionViewDelegate, UICollectionViewDa
             self.isLoading = true
             let start = itemsArray.count
             let end = start + 16
-            DispatchQueue.global().async {
-                // fake background loading task
-                sleep(2)
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
                 for _ in start...end {
                     self.itemsArray.append(self.getRandomColor())
                 }
@@ -93,8 +87,6 @@ extension CollectionViewController: UICollectionViewDelegate, UICollectionViewDa
         }
     }
 
-    
-    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         if self.isLoading {
             return CGSize.zero
@@ -124,5 +116,4 @@ extension CollectionViewController: UICollectionViewDelegate, UICollectionViewDa
             self.loadingView?.activityIndicator.stopAnimating()
         }
     }
-
 }

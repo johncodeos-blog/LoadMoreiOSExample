@@ -9,7 +9,7 @@
 import UIKit
 
 class TableViewController: UIViewController {
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet var tableView: UITableView!
 
     var itemsArray = [String]()
 
@@ -17,17 +17,16 @@ class TableViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //Register Item Cell
+        // Register Item Cell
         let itemCellNib = UINib(nibName: "TableViewItemCell", bundle: nil)
         self.tableView.register(itemCellNib, forCellReuseIdentifier: "tableviewitemcellid")
 
-        //Register Loading Cell
+        // Register Loading Cell
         let loadingCellNib = UINib(nibName: "LoadingCell", bundle: nil)
         self.tableView.register(loadingCellNib, forCellReuseIdentifier: "loadingcellid")
 
         loadData()
     }
-
 
     func loadData() {
         self.isLoading = false
@@ -37,15 +36,12 @@ class TableViewController: UIViewController {
         self.tableView.reloadData()
     }
 
-
     func loadMoreData() {
         if !self.isLoading {
             self.isLoading = true
             let start = itemsArray.count
             let end = start + 16
-            DispatchQueue.global().async {
-                // fake background loading task
-                sleep(2)
+            DispatchQueue.global().asyncAfter(deadline: .now() + .seconds(1)) {
                 for i in start...end {
                     self.itemsArray.append("Item \(i)")
                 }
@@ -73,7 +69,6 @@ extension TableViewController: UITableViewDelegate, UITableViewDataSource {
         return 2
     }
 
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "tableviewitemcellid", for: indexPath) as! TableViewItemCell
@@ -86,20 +81,16 @@ extension TableViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
 
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
-            return 44 //Item Cell height
+            return 44 // Item Cell height
         } else {
-            return 55 //Loading Cell height
+            return 55 // Loading Cell height
         }
     }
 
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-        let contentHeight = scrollView.contentSize.height
-
-        if (offsetY > contentHeight - scrollView.frame.height * 4) && !isLoading {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == itemsArray.count - 10, !isLoading {
             loadMoreData()
         }
     }
